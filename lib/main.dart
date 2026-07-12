@@ -403,7 +403,7 @@ class ServicesScreen extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ServiceSelectionScreen(serviceName: title),
+            builder: (context) => const LocationSelectionScreen(),
           ),
         );
       },
@@ -481,9 +481,9 @@ class ServiceSelectionScreen extends StatelessWidget {
 
           // Painel arrastável estilo Uber
           DraggableScrollableSheet(
-            initialChildSize: 0.4,
+            initialChildSize: 0.7,
             minChildSize: 0.3,
-            maxChildSize: 0.9,
+            maxChildSize: 1,
             builder: (context, scrollController) {
               return Container(
                 decoration: const BoxDecoration(
@@ -532,11 +532,7 @@ class ServiceSelectionScreen extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ConfirmationScreen(
-                                  serviceName: option["title"]!,
-                                  price: option["price"]!,
-                                  eta: option["eta"]!,
-                                ),
+                                builder: (context) => const ServiceSelectionScreen(serviceName: "Serviço"),
                               ),
                             );
                           },
@@ -774,6 +770,141 @@ class AccountScreen extends StatelessWidget {
             title: Text("Atividades"),
             trailing: Icon(Icons.arrow_forward_ios, size: 16),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------- SELEÇÃO DE LOCAL ----------------
+class LocationSelectionScreen extends StatelessWidget {
+  const LocationSelectionScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final locais = [
+      {"nome": "Posto da Gruta", "endereco": "Av. Benedito Matarazzo, 4229", "distancia": "3.1 km"},
+      {"nome": "Freakout", "endereco": "R. Luís Jacinto, 240 – Centro", "distancia": "9.4 km"},
+      {"nome": "Rodoviária São José", "endereco": "R. Itororó, 221 – Vila Piratininga", "distancia": "9.7 km"},
+      {"nome": "Monacolounge", "endereco": "Rua Luiz Jacinto, 260 – Centro", "distancia": "9.4 km"},
+      {"nome": "Terminal Jacareí", "endereco": "Av. Eng. David Monteiro Lino, 585", "distancia": "7.9 km"},
+      {"nome": "Bar do Manabu", "endereco": "Praça Cariri, 112 – Chácaras Reunidas", "distancia": "2.8 km"},
+    ];
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: const Text("Selecione o local", style: TextStyle(color: Colors.white)),
+      ),
+      body: Stack(
+        children: [
+          // Mapa simulado
+          SizedBox(
+            height: double.infinity,
+            child: Image.asset(
+              "assets/map.png", // imagem estática simulando o mapa
+              fit: BoxFit.cover,
+              width: double.infinity,
+            ),
+          ),
+
+          // Painel arrastável
+          // Painel arrastável
+          DraggableScrollableSheet(
+            initialChildSize: 0.7,
+            minChildSize: 0.3,
+            maxChildSize: 1,
+            builder: (context, scrollController) {
+              return Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 8,
+                      offset: Offset(0, -2),
+                    ),
+                  ],
+                ),
+                child: ListView(
+                  controller: scrollController,
+                  children: [
+                    // Drag handle
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 5,
+                        margin: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade400,
+                          borderRadius: BorderRadius.circular(2.5),
+                        ),
+                      ),
+                    ),
+                    // Localização atual
+                    Card(
+                      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      child: ListTile(
+                        leading: const Icon(Icons.my_location, color: Colors.blue),
+                        title: const Text("Localização atual"),
+                        subtitle: const Text("Avenida Benedito Doming..."),
+
+                      ),
+                    ),
+                    // Campo de busca
+                    Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: "Onde precisa?",
+                          prefixIcon: const Icon(Icons.search),
+                          filled: true,
+                          fillColor: Colors.grey.shade100,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const Padding(
+                      padding: EdgeInsets.all(12),
+                      child: Text(
+                        "Sugestões próximas",
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+
+                    // Lista de locais sugeridos
+                    ...locais.map((local) {
+                      return Card(
+                        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        child: ListTile(
+                          leading: const Icon(Icons.place, color: Colors.black),
+                          title: Text(local["nome"]!),
+                          subtitle: Text("${local["endereco"]} • ${local["distancia"]}"),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ServiceSelectionScreen(serviceName: "Serviço"),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    }).toList(),
+
+                    const SizedBox(height: 100),
+                  ],
+                ),
+              );
+            },
+          ),
+
         ],
       ),
     );
